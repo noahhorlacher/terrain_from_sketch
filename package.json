@@ -1,0 +1,35 @@
+{
+  "name": "terrain_from_sketch",
+  "version": "1.0.0",
+  "description": "Creates a 3D model of a terrain from a picture of a sketch",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "electron .",
+    "watch": "sass --watch sass:views/css --style=compressed"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/noahhorlacher/terrain_from_sketch.git"
+  },
+  "keywords": [
+    "3D",
+    "model",
+    "terrain",
+    "sketch",
+    "picture",
+    "image",
+    "processing"
+  ],
+  "author": "Noah Horlacher",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/noahhorlacher/terrain_from_sketch/issues"
+  },
+  "homepage": "https://github.com/noahhorlacher/terrain_from_sketch#readme",
+  "dependencies": {
+    "electron": "^9.0.2",
+    "electron-pug": "^2.0.0",
+    "webcamjs": "^1.0.26"
+  }
+}
