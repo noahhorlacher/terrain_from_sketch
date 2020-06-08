@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+html(lang="en")
+    head
+        meta(charset="UTF-8")
+        meta(name="viewport", content="width=device-width, initial-scale=1.0")
+
+        link(rel="stylesheet", href="css/master.css")
+
+        link(rel="stylesheet", href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.7/cropper.css")
+        script(src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.7/cropper.js")
+
+        script(src="js/cam.js")
+        title terrain from sketch
+    body
+        div#cropper.active
+            img#display
+
+        btn#cropconfirm.active Crop
+        canvas#heightmap

@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "electron .",
-    "watch": "sass --watch sass:views/css --style=compressed"
+    "watch": "sass --watch sass:public/css --style=compressed"
   },
   "repository": {
     "type": "git",
@@ -28,8 +28,13 @@
   },
   "homepage": "https://github.com/noahhorlacher/terrain_from_sketch#readme",
   "dependencies": {
+    "@jimp/plugin-threshold": "^0.12.1",
+    "canvas-to-buffer": "^1.1.0",
     "electron": "^9.0.2",
     "electron-pug": "^2.0.0",
-    "webcamjs": "^1.0.26"
+    "jimp": "^0.12.1",
+    "jquery": "^3.5.1",
+    "potrace": "^2.1.6",
+    "smartcrop": "^2.0.3"
   }
 }

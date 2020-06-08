@@ -1,20 +1,33 @@
 'use strict';
 
-const {app, BrowserWindow} = require('electron')
-const locals = {/* ...*/}
+const {
+  app,
+  BrowserWindow
+} = require('electron')
+const locals = {
+  /* ...*/ }
 const setupPug = require('electron-pug')
 
 app.on('ready', async () => {
   try {
-    let pug = await setupPug({pretty: true}, locals)
+    let pug = await setupPug({
+      pretty: true
+    }, locals)
     pug.on('error', err => console.error('electron-pug error', err))
   } catch (err) {
-    // Could not initiate 'electron-pug'
+    console.log(err)
   }
 
-  let mainWindow = new BrowserWindow({ width: 800, height: 600 })
+  let win = new BrowserWindow({
+    width: 1400,
+    height: 1000,
+    webPreferences: {
+      nodeIntegration: true
+    }
+  })
 
-  mainWindow.menuBarVisible = false
+  win.menuBarVisible = false
+  win.webContents.openDevTools()
 
-  mainWindow.loadURL(`file://${__dirname}/views/index.pug`)
+  win.loadURL(`file://${__dirname}/public/index.pug`)
 })
