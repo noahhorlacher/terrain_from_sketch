@@ -1,6 +1,8 @@
 let $ = require('jquery')
 let jimp = require('jimp')
-let potrace = require('potrace')
+let dataUriToBuffer = require('data-uri-to-buffer')
+require('floodfill')
+let THREE = require('three')
 
 let img_src = 'test.jpg'
 
@@ -25,109 +27,200 @@ $(document).ready(() => {
         $('#cropconfirm').off('click').removeClass('active')
         $('#cropper').removeClass('active')
 
+        console.log("loading image")
+
         // Load img
         jimp.read('public/' + img_src).then(image => {
+
             // Crop with given coords
+            console.log("jimp processing")
             image.crop(crop_x, crop_y, crop_w, crop_h)
                 .scaleToFit(1000, jimp.AUTO, jimp.RESIZE_BEZIER)
                 .threshold({
                     max: 170
                 }).invert()
                 .convolute([
-                    [1, 1, 1, 1, 1, 1, 1, 1, 1],
-                    [1, 1, 1, 1, 1, 1, 1, 1, 1],
-                    [1, 1, 1, 1, 1, 1, 1, 1, 1],
-                    [1, 1, 1, 1, 1, 1, 1, 1, 1],
-                    [1, 1, 1, 1, 1, 1, 1, 1, 1],
-                    [1, 1, 1, 1, 1, 1, 1, 1, 1],
-                    [1, 1, 1, 1, 1, 1, 1, 1, 1],
-                    [1, 1, 1, 1, 1, 1, 1, 1, 1],
-                    [1, 1, 1, 1, 1, 1, 1, 1, 1]
+                    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+                    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+                    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+                    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+                    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+                    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+                    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+                    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+                    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+                    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+                    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+                    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+                    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
                 ]).invert()
 
+            console.log('filling shapes')
             image.getBuffer(jimp.AUTO, (e, src) => {
-                var params = {
-                    color: '#ffffff',
-                    threshold: 250
-                }
-
                 let img_cropped = new Image()
 
-                // Width and height of image
-                let w = image.getWidth()
-                let h = image.getHeight()
+                let _s = src.reduce((data, byte) => {
+                    return data + String.fromCharCode(byte);
+                }, '')
+                let _b64 = btoa(_s)
 
-                $('#heightmap').attr({
-                    width: w,
-                    height: h
-                })
+                img_cropped.src = 'data:image/png;base64,' + _b64
 
-                // Trace lines into svg
-                potrace.trace(src, params, function (err, svg) {
+                img_cropped.onload = e => {
+                    // Width and height of image
+                    let w = image.getWidth()
+                    let h = image.getHeight()
 
-                    img_cropped.onload = e => {
-                        let canvas = $('#heightmap')
-                        let ctx = $('#heightmap')[0].getContext('2d')
+                    $('#heightmap').attr({
+                        width: w,
+                        height: h
+                    })
 
-                        // Draw the svg
-                        ctx.drawImage(img_cropped, 0, 0)
+                    let canvas = $('#heightmap')
+                    let ctx = $('#heightmap')[0].getContext('2d')
 
-                        // Load rasterized svg into jimp
-                        jimp.read(ctx).then((err, _img) => {
-                            if (err) throw err
+                    // redraw
+                    ctx.clearRect(0, 0, w, h)
+                    ctx.drawImage(img_cropped, 0, 0)
 
-                            _img.convolute([
+                    // Filling Shapes
+                    ctx.fillStyle = '#000000'
+                    ctx.fillFlood(0, 0, 8)
+
+                    // Erosion
+                    jimp.read(dataUriToBuffer(canvas[0].toDataURL())).then((img_filled) => {
+                        img_filled
+                            .invert()
+                            .convolute([
                                 [1, 1, 1],
-                                [1, -8, 1],
+                                [1, 1, 1],
                                 [1, 1, 1]
                             ])
+                            .convolute([
+                                [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+                                [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+                                [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+                                [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+                                [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+                                [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+                                [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+                                [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+                                [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+                                [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+                                [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+                                [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+                                [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+                            ]).invert()
+                            .scaleToFit(512, jimp.AUTO, jimp.RESIZE_NEAREST_NEIGHBOR)
 
-                            img.getBuffer(jimp.AUTO, (e, src) => {
+                        img_filled.getBuffer(jimp.AUTO, (e, img_eroded) => {
+                            let _img_eroded = new Image()
+
+                            let _s = img_eroded.reduce((data, byte) => {
+                                return data + String.fromCharCode(byte);
+                            }, '')
+                            let _b64 = btoa(_s)
+
+                            _img_eroded.src = 'data:image/png;base64,' + _b64
+
+                            _img_eroded.onload = e => {
                                 // redraw
                                 ctx.clearRect(0, 0, w, h)
-                                ctx.drawImage(src, 0, 0)
+                                ctx.drawImage(_img_eroded, 0, 0)
 
-                                // Get imagedata
-                                let img_data = ctx.getImageData(0, 0, w, h).data
+                                // Generate heightmap from canvas
+                                let heightmap = [,]
 
-                                console.log("img_data", img_data)
-
-                                let heightmap = [, ]
-
-                                // Make 1-bit bitmap
                                 for (let x = 0; x < w; x++) {
                                     for (let y = 0; y < h; y++) {
-                                        let red = y * (w * 4) + x * 4
-
-                                        let r = img_data[red]
-                                        let g = img_data[red + 1]
-                                        let b = img_data[red + 2]
-                                        let a = img_data[red + 3]
-
-                                        heightmap[x, y] = r + g + b + a > 0 ? 1 : 0
+                                        if (ctx.getImageData(x, y, 1, 1).data[0] > 0) {
+                                            heightmap[x][y] = 1
+                                        } else {
+                                            heightmap[x][y] = 0
+                                        }
                                     }
                                 }
 
-                                // Fill shapes
-                                let inside_shape = false
-                                for (let x = 0; x < w; x++) {
-                                    for (let y = 0; y < h; y++) {
-                                        let v = heightmap[x, y]
+                                // Generate terrain 3D model
+                                let camera, scene, renderer;
+                                let geometry, material, mesh;
 
-                                        if (v == 1 && !inside_shape) inside_shape = true
-                                        if (v == 0 && inside_shape) inside_shape = true
+                                const terrainScale = 10
+                                const plateau_height = 100
+
+                                init();
+                                animate();
+
+                                function init() {
+
+                                    camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.01, 10)
+                                    camera.position.z = 1
+
+                                    scene = new THREE.Scene()
+
+                                    geometry = new THREE.Geometry()
+
+                                    for (let y = 0; y < heightmap[0].length; y++) {
+                                        for (let x = 0; x < heightmap.length - 1; x++) {
+                                            // push upwards triangle
+                                            geometry.vertices.push(
+                                                new THREE.Vector3(x * terrainScale, heightmap[x][y] * plateau_height, y * terrainScale)
+                                            )
+                                        }
                                     }
+
+                                    let _w = heightmap.length - 1
+                                    let _h = heightmap[0].length - 1
+
+                                    // Create faces from vertices
+                                    for (let x = 0; x < _w; x++) {
+                                        for (let y = 0; y < _h; y++) {
+                                            // Downwards tri
+                                            if (y != _h - 1) {
+                                                geometry.faces.push(new THREE.Face3(x + (y * _w), x + 1 + (y * _w), x + ((y + 1) * _w)))
+                                            }
+
+                                            // Upwards tri
+                                            if (y != 0) {
+                                                geometry.faces.push(new THREE.Face3(x + (y * _w), x + 1 + ((y-1) * _w), x + 1 (y * _w)))
+                                            }
+                                        }
+                                    }
+
+                                    geometry.computeFaceNormals()
+
+                                    mesh = new THREE.Mesh(geometry, new THREE.MeshNormalMaterial)
+
+                                    mesh.position.z = -(terrainScale*(_h+1))
+                                    mesh.rotation.y = -Math.PI * .5
+
+                                    scene.add(mesh)
+
+                                    renderer = new THREE.WebGLRenderer({
+                                        antialias: true
+                                    })
+
+                                    renderer.setSize(window.innerWidth, window.innerHeight)
+                                    document.body.appendChild(renderer.domElement)
+
+                                }
+
+                                function animate() {
+
+                                    requestAnimationFrame(animate)
+
+                                    mesh.rotation.x += 0.01
+                                    mesh.rotation.y += 0.02
+
+                                    renderer.render(scene, camera)
+
                                 }
 
                                 $('#heightmap').addClass('active')
-                            })
+                            }
                         })
-
-
-                    }
-
-                    img_cropped.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg)
-                })
+                    })
+                }
             })
         })
     })

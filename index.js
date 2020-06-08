@@ -19,8 +19,8 @@ app.on('ready', async () => {
   }
 
   let win = new BrowserWindow({
-    width: 1400,
-    height: 1000,
+    width: 1100,
+    height: 800,
     webPreferences: {
       nodeIntegration: true
     }
