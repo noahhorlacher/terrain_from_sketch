@@ -33,10 +33,13 @@
     "electron": "^9.0.2",
     "electron-pug": "^2.0.0",
     "floodfill": "^2.1.1",
+    "isosurface-generator": "^2.0.1",
     "jimp": "^0.12.1",
     "jquery": "^3.5.1",
+    "ndarray": "^1.0.19",
     "potrace": "^2.1.6",
     "smartcrop": "^2.0.3",
-    "three": "^0.117.1"
+    "three": "^0.117.1",
+    "tumult": "^3.0.14"
   }
 }

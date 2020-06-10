@@ -8,8 +8,10 @@ html(lang="en")
 
         link(rel="stylesheet", href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.7/cropper.css")
         script(src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.7/cropper.js")
-
-        script(src="js/cam.js")
+        
+        script(src="js/image_to_heightmap.js" type="module")
+        script(src="js/heightmap_to_terrain.js" type="module")
+        script(src="js/rendering.js" type="module")
         title terrain from sketch
     body
         div#cropper.active
