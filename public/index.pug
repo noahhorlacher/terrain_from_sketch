@@ -6,16 +6,11 @@ html(lang="en")
 
         link(rel="stylesheet", href="css/master.css")
 
-        link(rel="stylesheet", href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.7/cropper.css")
-        script(src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.7/cropper.js")
-        
-        script(src="js/image_to_heightmap.js" type="module")
-        script(src="js/heightmap_to_terrain.js" type="module")
-        script(src="js/rendering.js" type="module")
+        link(rel="stylesheet", href="../node_modules/cropperjs/dist/cropper.min.css")
+        script(src="js/main.js" type="module")
         title terrain from sketch
     body
-        div#cropper.active
-            img#display
-
         btn#cropconfirm.active Crop
-        canvas#heightmap
+        #cropper.active
+            img#display
+        canvas#steps
